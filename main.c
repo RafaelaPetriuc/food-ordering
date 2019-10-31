@@ -132,7 +132,6 @@ int main() {
                 gets(info);
                 gets(info);
                 state++;
-
                 break;
             }
             case 6:{
