@@ -11,7 +11,7 @@ void InputPersonalData(char Username[], char Password[]){
     gets(Password);
 }
 
-void displayOrder1(char Username[], char types[], char drinks[], double drinksPrices, double prices){
+void displayOrderFood(char Username[], char types[], char drinks[], double drinksPrices, double prices){
     printf("This is your order:\n");
     printf("-------------\n");
     printf("Name: %s\n", Username);
@@ -23,7 +23,7 @@ void displayOrder1(char Username[], char types[], char drinks[], double drinksPr
     }
 }
 
-void displayOrder2(int cutlery, char info[50], double prices, double drinksPrices){
+void displayOrderPreferences(int cutlery, char info[50], double prices, double drinksPrices){
     if(cutlery==1)
         printf("Cutlery: Yes\n");
     else

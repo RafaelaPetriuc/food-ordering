@@ -7,8 +7,8 @@
 
 void InputPersonalData(char Username[], char Password[]);
 
-void displayOrder1(char Username[], char types[], char drinks[], double drinksPrices, double prices);
-void displayOrder2(int cutlery, char info[50], double prices, double drinksPrices);
+void displayOrderFood(char Username[], char types[], char drinks[], double drinksPrices, double prices);
+void displayOrderPreferences(int cutlery, char info[50], double prices, double drinksPrices);
 
 int getChoiceIndex(int noOfFoods, int *state);
 
