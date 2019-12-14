@@ -9,58 +9,56 @@
 #define MAX_LINE 50
 #define MAX_DRINK 50
 #define LOAD_DATA "Please load the data"
+#define FILE_PATH "../datafood.txt"
 
-void readFood(char foodName[], int * noOfTypes);
+void readFood(FILE *f, char foodName[], int * noOfTypes);
 
-void readTypes(double *prices, char **types);
+void readTypes(FILE *f, double *prices, char **types);
 
-void readDrinks(double *prices, char **drinks);
+void readDrinks(FILE *f, double *prices, char **drinks);
 
 void appendChartAtBeginning(char *str, char c);
 
+void readFoodWithTypes(FILE *foodDataFile, int *noOfFoodsAddr, char ***foodsAddr, int **noOfTypesAddr,
+                       char ****typesAddr, double ***pricesAddr);
+
+void read_Drinks(FILE *foodDataFile, int *noOfDrinksAddr, char ***drinksAddr, double **drinksPricesAddr);
+
+void readData(FILE *foodDataFile, int *noOfFoodsAddr, char ***foodsAddr, int **noOfTypesAddr,
+              char ****typesAddr, double ***pricesAddr,
+              int *noOfDrinksAddr, char ***drinksAddr, double **drinksPricesAddr);
+
+void freeData(int noOfFoods, char **foods, int *noOfTypes,
+              char ***types, double **prices,
+              int noOfDrinks, char **drinks, double *drinksPrices);
+
 int main() {
-    //char food[][MAX_FOOD_NAME] = {"Pizza","Pasta","Salad"};
-    //char drinks[][30] = {"Coca-cola","Fanta","Lipton", "Water", "No, thanks!"};
+
+    FILE * foodDataFile;
+    foodDataFile = fopen(FILE_PATH, "r");
+    if(foodDataFile==NULL){
+        perror("File could not be open");
+        exit(-1);
+    }
+
     char Username[20], info[50], Password[20];
-    //char types[3][4][17] = {{"Pizza Carbonara", "Pizza Diavola", "Pizza Margherita"},
-                           // {"Chicken alfredo", "Mac&cheese "},
-                          //  {"Tuna Salad", "Chicken Salad", "Greek Salad", "Cobb"}};
-    //double prices[3][4] = {
-          //  {21, 23, 19},
-           // {23, 21},
-           // {23, 22, 19, 21}};
-    //double drinksPrices[6] = {5, 5, 5, 4, 0};
     int choice, foodChoice, typeChoice, drinksChoice=0, state=0, order=0, cutlery;
 
     int noOfFoods = 3;
-    printf("%s\n", LOAD_DATA);
-    scanf("%d", &noOfFoods);
-    getchar();
-    char **foods = (char**) malloc(noOfFoods * sizeof(char *));
-    int *noOfTypes = (int *) malloc(noOfFoods * sizeof(int));
-    char ***types = (char ***) malloc(noOfFoods * sizeof(char **));
-    double **prices = (double **) malloc(noOfFoods * sizeof(double *));
-    for(int i=0;i<noOfFoods;i++){
-        foods[i] = (char *) malloc(MAX_FOOD_NAME * sizeof(char));
-        readFood(foods[i], &noOfTypes[i]);
-        types[i] = (char **) malloc(noOfTypes[i] * sizeof(char *));
-        prices[i] = (double *) malloc(noOfTypes[i] * sizeof(double));
-        for( int j=0;j<noOfTypes[i];j++){
-            types[i][j] = (char *) malloc(MAX_TYPE_FOOD * sizeof(char));
-        }
-        readTypes(prices[i], types[i]);
-    }
-
+    char **foods;
+    int *noOfTypes;
+    char ***types;
+    double **prices;
     int noOfDrinks;
-    scanf("%d", &noOfDrinks);
-    char **drinks = (char **) malloc(noOfFoods * sizeof(char *));
-    double *drinksPrices = (double *) malloc(noOfFoods * sizeof(double));
-    scanf("%d", &noOfDrinks);
-    for(int i=0;i<noOfDrinks;i++){
-        drinks[i] = (char *) malloc(MAX_DRINK * sizeof(char));
-    }
-    readDrinks(drinksPrices, drinks);
+    char **drinks;
+    double *drinksPrices;
 
+    readData(foodDataFile, &noOfFoods, &foods, &noOfTypes,
+    &types, &prices,
+    &noOfDrinks, &drinks, &drinksPrices);
+
+
+    fclose(foodDataFile);
     while(!order) {
         switch (state) {
             case 0: {
@@ -109,28 +107,16 @@ int main() {
             }
         }
     }
+    freeData(noOfFoods, foods, noOfTypes,types, prices,
+                   noOfDrinks, drinks, drinksPrices);
 
-    for(int i=0;i<noOfFoods;i++){
-        for(int j=0;j<noOfTypes[i];i++){
-            free(types[i][j]);
-        }
-        free(foods[i]);
-        free(types[i]);
-        free(prices[i]);
-        free(drinks[i]);
-    }
-    free(foods);
-    free(noOfTypes);
-    free(types);
-    free(prices);
-    free(drinks);
-    free(drinksPrices);
     return 0;
 }
 
-void readFood(char foodName[], int * noOfTypes){
+void readFood(FILE *f, char foodName[], int * noOfTypes){
     char line[MAX_LINE];
-    gets(line);
+    fgets(line, MAX_LINE, f);
+    line[strlen(line)-1]='\0';
     const char delim[2]=":";
     char *token;
     token=strtok(line, delim);
@@ -145,9 +131,10 @@ void appendChartAtBeginning(char *str, char c){
     str[0]=c;
 }
 
-void readTypes(double *prices, char **types){
+void readTypes(FILE *f, double *prices, char **types){
     char line[MAX_LINE];
-    gets(line);
+    fgets(line, MAX_LINE, f);
+    line[strlen(line)-1]='\0';
     appendChartAtBeginning(line, ' ');
     char *token=strtok(line, "(");
     int k=0;
@@ -161,9 +148,10 @@ void readTypes(double *prices, char **types){
     }
 }
 
-void readDrinks(double *prices, char **drinks){
+void readDrinks(FILE *f, double *prices, char **drinks){
     char line[MAX_LINE];
-    gets(line);
+    fgets(line, MAX_LINE, f);
+    line[strlen(line)-1]='\0';
     appendChartAtBeginning(line, ' ');
     char *token=strtok(line, "(");
     int k=0;
@@ -175,4 +163,78 @@ void readDrinks(double *prices, char **drinks){
         k++;
         token=strtok(NULL, "(");
     }
+}
+
+void readFoodWithTypes(FILE *foodDataFile, int *noOfFoodsAddr, char ***foodsAddr, int **noOfTypesAddr,
+        char ****typesAddr, double ***pricesAddr){
+    int noOfFoods = 3;
+    printf("%s\n", LOAD_DATA);
+    fscanf(foodDataFile, "%d", &noOfFoods);
+    fgetc(foodDataFile);
+    char **foods = (char**) malloc(noOfFoods * sizeof(char *));
+    int *noOfTypes = (int *) malloc(noOfFoods * sizeof(int));
+    char ***types = (char ***) malloc(noOfFoods * sizeof(char **));
+    double **prices = (double **) malloc(noOfFoods * sizeof(double *));
+    for(int i=0;i<noOfFoods;i++){
+        foods[i] = (char *) malloc(MAX_FOOD_NAME * sizeof(char));
+        readFood(foodDataFile, foods[i], &noOfTypes[i]);
+        types[i] = (char **) malloc(noOfTypes[i] * sizeof(char *));
+        prices[i] = (double *) malloc(noOfTypes[i] * sizeof(double));
+        for( int j=0;j<noOfTypes[i];j++){
+            types[i][j] = (char *) malloc(MAX_TYPE_FOOD * sizeof(char));
+        }
+        readTypes(foodDataFile, prices[i], types[i]);
+    }
+    *noOfFoodsAddr = noOfFoods;
+    *foodsAddr = foods;
+    *noOfTypesAddr = noOfTypes;
+    *typesAddr = types;
+    *pricesAddr = prices;
+}
+
+void read_Drinks(FILE *foodDataFile, int *noOfDrinksAddr, char ***drinksAddr, double **drinksPricesAddr){
+    int noOfDrinks;
+    fscanf(foodDataFile, "%d", &noOfDrinks);
+    fgetc(foodDataFile);
+    char **drinks = (char **) malloc(noOfDrinks * sizeof(char *));
+    double *drinksPrices = (double *) malloc(noOfDrinks * sizeof(double));
+    fscanf(foodDataFile, "%d", &noOfDrinks);
+    for(int i=0;i<noOfDrinks;i++){
+        drinks[i] = (char *) malloc(MAX_DRINK * sizeof(char));
+    }
+    readDrinks(foodDataFile, drinksPrices, drinks);
+    *noOfDrinksAddr = noOfDrinks;
+    *drinksAddr = drinks;
+    *drinksPricesAddr = drinksPrices;
+}
+
+void readData(FILE *foodDataFile, int *noOfFoodsAddr, char ***foodsAddr, int **noOfTypesAddr,
+              char ****typesAddr, double ***pricesAddr,
+              int *noOfDrinksAddr, char ***drinksAddr, double **drinksPricesAddr){
+    readFoodWithTypes(foodDataFile, noOfFoodsAddr, foodsAddr, noOfTypesAddr,
+    typesAddr, pricesAddr);
+    read_Drinks(foodDataFile, noOfDrinksAddr, drinksAddr, drinksPricesAddr);
+}
+
+void freeData(int noOfFoods, char **foods, int *noOfTypes,
+              char ***types, double **prices,
+              int noOfDrinks, char **drinks, double *drinksPrices){
+    for(int i=0;i<noOfFoods;i++){
+        for(int j=0;j<noOfTypes[i];i++){
+            free(types[i][j]);
+        }
+        free(foods[i]);
+        free(types[i]);
+        free(prices[i]);
+
+    }
+    free(foods);
+    free(noOfTypes);
+    free(types);
+    free(prices);
+    for(int i=0;i<noOfDrinks;i++){
+        free(drinks[i]);
+    }
+    free(drinks);
+    free(drinksPrices);
 }
