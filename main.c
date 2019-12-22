@@ -41,7 +41,7 @@ int main() {
         exit(-1);
     }
 
-    char Username[20], info[50], Password[20];
+    char  info[50];
     int choice, foodChoice, typeChoice, drinksChoice=0, state=0, order=0, cutlery;
 
     int noOfFoods = 3;
@@ -57,12 +57,12 @@ int main() {
     &types, &prices,
     &noOfDrinks, &drinks, &drinksPrices);
 
-
+    user u = createUser();
     fclose(foodDataFile);
     while(!order) {
         switch (state) {
             case 0: {
-                InputPersonalData(Username, Password);
+                InputPersonalData(&u);
                 state++;
                 break;
             }

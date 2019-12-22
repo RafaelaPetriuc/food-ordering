@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include<string.h>
+#include <string.h>
+#include <stdlib.h>
 // Created by Lenovo on 11/6/2019.
-
-void InputPersonalData(char Username[], char Password[]){
+#define MAX_USERNAME 20
+#define MAX_PASSWORD 20
+void InputPersonalData(user *u){
     printf("Welcome to Food Thingies!\n");
     printf("Please sign in to continue!\n");
     printf("---Username:\n");
-    gets(Username);
+    gets(u->Username);
     printf("---Password:\n");
-    gets(Password);
+    gets(u->Password);
 }
 
 void displayOrderFood(char Username[], char types[], char drinks[], double drinksPrices, double prices){
@@ -47,5 +50,11 @@ int getChoiceIndex(int noOfFoods, int *state){
     return choiceIndex;
 }
 
+user createUser(){
+    user u;
+    u.Username = (char*)malloc(MAX_USERNAME* sizeof(char));
+    u.Password = (char*)malloc(MAX_PASSWORD *sizeof(char));
+    return u;
+}
 //
 
